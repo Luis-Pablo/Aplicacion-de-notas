@@ -2,6 +2,8 @@
 
 namespace app\notas\models;
 use app\notas\libs\Database;
+use PDO;
+
 
 class Note extends Database{
 
@@ -18,7 +20,7 @@ class Note extends Database{
         $query->execute(['title' => $this->title, 'uuid' => $this->uuid, 'content' => $this->content]);
 
     }
-
+    
     public function update(){
         $query  = $this->connect()->prepare("UPDATE notes SET title = :title, content = :content, updated = NOW() WHERE uuid = :uuid");
         $query->execute(['title' => $this->title, 'uuid' => $this->uuid, 'content' => $this->content]);
@@ -28,6 +30,17 @@ class Note extends Database{
         $db = new Database();
         $query = $db->connect()->prepare("SELECT * FROM notes WHERE uuid = :uuid");
         $query->execute(['uuid' =>$uuid]);
+
+        $note = Note::createFromArray($query->fetch(PDO::FETCH_ASSOC));
+
+        return $note;
+    }
+
+    public static function createFromArray($arr):Note{
+        $note = new Note($arr['title'], $arr['content']);
+        $note->setUUID($arr['uuid']);
+
+        return $note;
     }
 
     public function getUUID(){
