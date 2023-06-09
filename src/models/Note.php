@@ -21,7 +21,13 @@ class Note extends Database{
 
     public function update(){
         $query  = $this->connect()->prepare("UPDATE notes SET title = :title, content = :content, updated = NOW() WHERE uuid = :uuid");
-        $query->execute(['title' => $this->title, 'uuid' => $this->uuid, 'content' => $this->content])
+        $query->execute(['title' => $this->title, 'uuid' => $this->uuid, 'content' => $this->content]);
+    }
+
+    public static function get($uuid){
+        $db = new Database();
+        $query = $db->connect()->prepare("SELECT * FROM notes WHERE uuid = :uuid");
+        $query->execute(['uuid' =>$uuid]);
     }
 
     public function getUUID(){
